@@ -5,10 +5,32 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Cloud OneNote</title>
     <style>
-        body { font-family: 'Segoe UI', sans-serif; background-color: #1e1e1e; color: white; margin: 0; display: flex; height: 100vh; overflow: hidden; }
+        /* 🎨 THEME VARIABLES (Defaults to Dark Mode) */
+        :root {
+            --bg-body: #1e1e1e;
+            --bg-sidebar: #252526;
+            --bg-card: #2d2d2d;
+            --bg-history: #1a1a1a;
+            --text-main: #ffffff;
+            --border-color: #3c3c3c;
+            --input-bg: #3c3c3c;
+        }
+
+        /* ☀️ LIGHT MODE OVERRIDES */
+        [data-theme="light"] {
+            --bg-body: #f3f3f3;
+            --bg-sidebar: #eaeaea;
+            --bg-card: #ffffff;
+            --bg-history: #f9f9f9;
+            --text-main: #1c1c1c;
+            --border-color: #d1d1d1;
+            --input-bg: #f0f0f0;
+        }
+
+        body { font-family: 'Segoe UI', sans-serif; background-color: var(--bg-body); color: var(--text-main); margin: 0; display: flex; height: 100vh; overflow: hidden; transition: background 0.3s, color 0.3s; }
         
         /* OneNote-style Left Sidebar */
-        .sidebar { width: 220px; background-color: #252526; height: 100%; padding: 20px; border-right: 1px solid #3c3c3c; box-sizing: border-box; }
+        .sidebar { width: 220px; background-color: var(--bg-sidebar); height: 100%; padding: 20px; border-right: 1px solid var(--border-color); box-sizing: border-box; transition: background 0.3s; }
         .sidebar h3 { color: #bb86fc; margin-top: 0; }
         .logout-link { color: #cf6679; text-decoration: none; font-size: 14px; display: block; margin-top: 30px; }
         
@@ -16,26 +38,27 @@
         .main-content { flex: 1; padding: 25px; display: flex; flex-direction: column; height: 100%; box-sizing: border-box; }
         
         /* OneNote Word Ribbon Control Bar */
-        .ribbon { background-color: #2d2d2d; padding: 10px; border-radius: 8px; display: flex; gap: 8px; align-items: center; margin-bottom: 15px; border: 1px solid #3c3c3c; }
-        select, button { background-color: #3c3c3c; color: white; border: 1px solid #555; padding: 8px 12px; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 14px; }
-        button:hover { background-color: #505050; }
+        .ribbon { background-color: var(--bg-card); padding: 10px; border-radius: 8px; display: flex; gap: 8px; align-items: center; margin-bottom: 15px; border: 1px solid var(--border-color); transition: background 0.3s; }
+        select, button { background-color: var(--input-bg); color: var(--text-main); border: 1px solid var(--border-color); padding: 8px 12px; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 14px; }
+        button:hover { background-color: #505050; color: white; }
         
         .ai-btn { background-color: #03dac6; color: #121212; border: none; }
-        .ai-btn:hover { background-color: #01b4a3; }
-        .save-btn { background-color: #bb86fc; color: black; border: none; margin-left: auto; }
+        .ai-btn:hover { background-color: #01b4a3; color: #121212; }
+        .save-btn { background-color: #bb86fc; color: black; border: none; }
         .save-btn:hover { background-color: #9965db; }
+        .theme-btn { background-color: #555; color: white; border: none; margin-left: auto; }
         
         /* Layout split for Typing and History */
         .workspace { display: flex; flex: 1; gap: 20px; min-height: 0; }
         
         /* OneNote Canvas (Rich Text Input) */
-        .editor { flex: 2; background-color: #2d2d2d; padding: 20px; border-radius: 8px; border: 1px solid #444; font-size: 16px; outline: none; overflow-y: auto; height: 100%; box-sizing: border-box; }
+        .editor { flex: 2; background-color: var(--bg-card); padding: 20px; border-radius: 8px; border: 1px solid var(--border-color); font-size: 16px; outline: none; overflow-y: auto; height: 100%; box-sizing: border-box; transition: background 0.3s; }
         .editor:empty:before { content: "Start typing your styled notes here, highlight text to format, or type a prompt for Gemini..."; color: #aaa; }
         
         /* Saved notes column */
-        .history { flex: 1; background-color: #1a1a1a; padding: 15px; border-radius: 8px; border: 1px solid #333; overflow-y: auto; height: 100%; box-sizing: border-box; }
-        .history h4 { margin-top: 0; color: #a0a0a0; border-bottom: 1px solid #333; padding-bottom: 5px; }
-        .saved-note-card { background-color: #252526; padding: 12px; border-radius: 6px; margin-bottom: 10px; border-left: 4px solid #bb86fc; font-size: 14px; word-break: break-word; }
+        .history { flex: 1; background-color: var(--bg-history); padding: 15px; border-radius: 8px; border: 1px solid var(--border-color); overflow-y: auto; height: 100%; box-sizing: border-box; transition: background 0.3s; }
+        .history h4 { margin-top: 0; color: #a0a0a0; border-bottom: 1px solid var(--border-color); padding-bottom: 5px; }
+        .saved-note-card { background-color: var(--bg-card); padding: 12px; border-radius: 6px; margin-bottom: 10px; border-left: 4px solid #bb86fc; font-size: 14px; word-break: break-word; color: var(--text-main); transition: background 0.3s; }
     </style>
 </head>
 <body>
@@ -69,6 +92,8 @@
             
             <button class="ai-btn" onclick="askGemini()">✨ Ask Gemini AI</button>
             <button class="save-btn" onclick="saveNote()">Save Note to Cloud</button>
+            
+            <button class="theme-btn" onclick="toggleTheme()">🌓 Theme</button>
         </div>
 
         <div class="workspace">
@@ -82,7 +107,6 @@
     </div>
 
     <script>
-        // Core rich text editing utilities
         function execCommand(command, value = null) {
             document.execCommand(command, false, value);
         }
@@ -91,7 +115,16 @@
             document.execCommand('fontSize', false, sizeValue);
         }
 
-        // Fetch and load notes immediately on start
+        // 🌓 Theme Toggler Script
+        function toggleTheme() {
+            const currentTheme = document.documentElement.getAttribute("data-theme");
+            if (currentTheme === "light") {
+                document.documentElement.removeAttribute("data-theme");
+            } else {
+                document.documentElement.setAttribute("data-theme", "light");
+            }
+        }
+
         document.addEventListener("DOMContentLoaded", fetchNotes);
 
         async function fetchNotes() {
@@ -143,12 +176,9 @@
             });
 
             let data = await res.json();
-            
-            // Clean up the placeholder message
             fetchNotes(); 
             
             if (data.reply) {
-                // Formatting the response layout cleanly inside your rich content window
                 let formattedReply = "<br><div style='color:#03dac6; border-left:3px solid #03dac6; padding-left:10px; margin:10px 0;'>" + 
                                      data.reply.replace(/\n/g, "<br>") + 
                                      "</div><br>";
