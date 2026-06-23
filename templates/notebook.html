@@ -5,23 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Cloud OneNote</title>
     <style>
-        /* 🎨 THEME VARIABLES (Defaults to Dark Mode) */
+        /* 🎨 THEME VARIABLES (Defaults to Light Mode) */
         :root {
-            --bg-body: #1e1e1e;
-            --bg-sidebar: #252526;
-            --bg-card: #2d2d2d;
-            --bg-history: #1a1a1a;
-            --text-main: #ffffff;
-            --text-muted: #a0a0a0;
-            --border-color: #3c3c3c;
-            --input-bg: #3c3c3c;
-            --shadow: transparent;
-            --sidebar-header: #bb86fc;
-            --ai-text: #03dac6;
-        }
-
-        /* ☀️ LIGHT MODE OVERRIDES */
-        [data-theme="light"] {
             --bg-body: #f8f9fa;       /* Premium off-white background */
             --bg-sidebar: #f1f3f5;   /* Distinct, slightly darker gray for sidebar */
             --bg-card: #ffffff;      /* Crisp pure white canvas/ribbon */
@@ -35,13 +20,28 @@
             --ai-text: #007a70;      /* Darker teal for accessible contrast */
         }
 
+        /* 🌙 DARK MODE OVERRIDES */
+        [data-theme="dark"] {
+            --bg-body: #1e1e1e;
+            --bg-sidebar: #252526;
+            --bg-card: #2d2d2d;
+            --bg-history: #1a1a1a;
+            --text-main: #ffffff;
+            --text-muted: #a0a0a0;
+            --border-color: #3c3c3c;
+            --input-bg: #3c3c3c;
+            --shadow: transparent;
+            --sidebar-header: #bb86fc;
+            --ai-text: #03dac6;
+        }
+
         body { font-family: 'Segoe UI', sans-serif; background-color: var(--bg-body); color: var(--text-main); margin: 0; display: flex; height: 100vh; overflow: hidden; transition: background 0.3s, color 0.3s; }
         
         /* OneNote-style Left Sidebar */
         .sidebar { width: 220px; background-color: var(--bg-sidebar); height: 100%; padding: 20px; border-right: 1px solid var(--border-color); box-sizing: border-box; transition: background 0.3s, border-color 0.3s; }
         .sidebar h3 { color: var(--sidebar-header); margin-top: 0; transition: color 0.3s; }
-        .logout-link { color: #cf6679; text-decoration: none; font-size: 14px; display: block; margin-top: 30px; }
-        [data-theme="light"] .logout-link { color: #dc3545; } /* Darker red for light mode */
+        .logout-link { color: #dc3545; text-decoration: none; font-size: 14px; display: block; margin-top: 30px; } /* Darker red for light mode */
+        [data-theme="dark"] .logout-link { color: #cf6679; }
         
         /* Right Side Content Areas */
         .main-content { flex: 1; padding: 25px; display: flex; flex-direction: column; height: 100%; box-sizing: border-box; }
@@ -49,30 +49,30 @@
         /* OneNote Word Ribbon Control Bar */
         .ribbon { background-color: var(--bg-card); padding: 10px; border-radius: 8px; display: flex; gap: 8px; align-items: center; margin-bottom: 15px; border: 1px solid var(--border-color); box-shadow: var(--shadow); transition: background 0.3s, border-color 0.3s, box-shadow 0.3s; }
         select, button { background-color: var(--input-bg); color: var(--text-main); border: 1px solid var(--border-color); padding: 8px 12px; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 14px; transition: background 0.3s, color 0.3s, border-color 0.3s; }
-        button:hover { background-color: #505050; color: white; }
-        [data-theme="light"] button:hover { background-color: #e2e6ea; color: #212529; }
+        button:hover { background-color: #e2e6ea; color: #212529; }
+        [data-theme="dark"] button:hover { background-color: #505050; color: white; }
         
-        .ai-btn { background-color: #03dac6; color: #121212; border: none; }
-        .ai-btn:hover { background-color: #01b4a3; color: #121212; }
-        [data-theme="light"] .ai-btn { background-color: #007a70; color: #ffffff; }
-        [data-theme="light"] .ai-btn:hover { background-color: #005a52; color: #ffffff; }
+        .ai-btn { background-color: #007a70; color: #ffffff; border: none; }
+        .ai-btn:hover { background-color: #005a52; color: #ffffff; }
+        [data-theme="dark"] .ai-btn { background-color: #03dac6; color: #121212; }
+        [data-theme="dark"] .ai-btn:hover { background-color: #01b4a3; color: #121212; }
 
-        .save-btn { background-color: #bb86fc; color: black; border: none; }
-        .save-btn:hover { background-color: #9965db; }
-        [data-theme="light"] .save-btn { background-color: #6f42c1; color: white; }
-        [data-theme="light"] .save-btn:hover { background-color: #5a32a3; }
+        .save-btn { background-color: #6f42c1; color: white; border: none; }
+        .save-btn:hover { background-color: #5a32a3; }
+        [data-theme="dark"] .save-btn { background-color: #bb86fc; color: black; }
+        [data-theme="dark"] .save-btn:hover { background-color: #9965db; }
 
-        .theme-btn { background-color: #555; color: white; border: none; margin-left: auto; }
-        [data-theme="light"] .theme-btn { background-color: #6c757d; color: white; }
-        [data-theme="light"] .theme-btn:hover { background-color: #5a6268; }
+        .theme-btn { background-color: #6c757d; color: white; border: none; margin-left: auto; }
+        [data-theme="dark"] .theme-btn { background-color: #555; color: white; }
+        [data-theme="dark"] .theme-btn:hover { background-color: #5a6268; }
         
         /* Layout split for Typing and History */
         .workspace { display: flex; flex: 1; gap: 20px; min-height: 0; }
         
         /* OneNote Canvas (Rich Text Input) */
         .editor { flex: 2; background-color: var(--bg-card); padding: 20px; border-radius: 8px; border: 1px solid var(--border-color); font-size: 16px; outline: none; overflow-y: auto; height: 100%; box-sizing: border-box; box-shadow: var(--shadow); transition: background 0.3s, border-color 0.3s, box-shadow 0.3s; }
-        .editor:empty:before { content: "Start typing your styled notes here, highlight text to format, or type a prompt for Gemini..."; color: #aaa; }
-        [data-theme="light"] .editor:empty:before { color: #adb5bd; }
+        .editor:empty:before { content: "Start typing your styled notes here, highlight text to format, or type a prompt for Gemini..."; color: #adb5bd; }
+        [data-theme="dark"] .editor:empty:before { color: #aaa; }
         
         /* Saved notes column */
         .history { flex: 1; background-color: var(--bg-history); padding: 15px; border-radius: 8px; border: 1px solid var(--border-color); overflow-y: auto; height: 100%; box-sizing: border-box; transition: background 0.3s, border-color 0.3s; }
@@ -134,13 +134,13 @@
             document.execCommand('fontSize', false, sizeValue);
         }
 
-        // 🌓 Theme Toggler Script
+        // 🌓 Theme Toggler Script (Defaults to Light, Toggles to Dark)
         function toggleTheme() {
             const currentTheme = document.documentElement.getAttribute("data-theme");
-            if (currentTheme === "light") {
+            if (currentTheme === "dark") {
                 document.documentElement.removeAttribute("data-theme");
             } else {
-                document.documentElement.setAttribute("data-theme", "light");
+                document.documentElement.setAttribute("data-theme", "dark");
             }
         }
 
@@ -187,8 +187,8 @@
             }
 
             // Dynamically check text color for loading indicator depending on theme
-            const isLight = document.documentElement.getAttribute("data-theme") === "light";
-            const loadingColor = isLight ? "#007a70" : "#03dac6";
+            const isDark = document.documentElement.getAttribute("data-theme") === "dark";
+            const loadingColor = isDark ? "#03dac6" : "#007a70";
 
             editor.innerHTML += `<br><br><i style='color:${loadingColor};'>Gemini is writing... ✨</i><br>`;
             
