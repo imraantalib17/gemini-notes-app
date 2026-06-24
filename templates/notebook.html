@@ -4,7 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Cloud OneNote</title>
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%220.82em%22 x=%2210%22 font-size=%2275%22>💜</text></svg>">
+    <!-- 💜 Favicon perfectly centered and padded -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%2250%%22 x=%2250%%22 dominant-baseline=%22central%22 text-anchor=%22middle%22 font-size=%2280%22>💜</text></svg>">
     <style>
         /* 🎨 THEME VARIABLES */
         :root {
@@ -78,27 +79,34 @@
         .expand-btn { background-color: transparent; border: none; padding: 4px 8px; font-size: 16px; }
         
         #notesContainer { flex: 1; overflow-y: auto; }
-        .saved-note-card { background-color: var(--bg-card); padding: 12px; border-radius: 6px; margin-bottom: 10px; border-left: 4px solid var(--sidebar-header); font-size: 14px; word-break: break-word; color: var(--text-main); box-shadow: var(--shadow); }
+        
+        /* Note Card styling with dedicated action footers */
+        .saved-note-card { background-color: var(--bg-card); padding: 12px; border-radius: 6px; margin-bottom: 10px; border-left: 4px solid var(--sidebar-header); font-size: 14px; word-break: break-word; color: var(--text-main); box-shadow: var(--shadow); display: flex; flex-direction: column; }
+        .note-body { flex: 1; overflow: hidden; max-height: 180px; text-overflow: ellipsis; }
+        
+        .note-actions { display: flex; gap: 10px; margin-top: 10px; border-top: 1px solid var(--border-color); padding-top: 8px; }
+        .action-link { font-size: 12px; text-decoration: none; font-weight: bold; color: var(--sidebar-header); background: transparent; border: none; padding: 2px 5px; cursor: pointer; }
+        .action-link:hover { opacity: 0.8; }
 
-        /* 🖥️ FULLSCREEN DASHBOARD OVERLAY */
+        /* 🖥️ DASHBOARD OVERLAY (Cleaned Header) */
         .fullscreen-modal { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background-color: var(--bg-body); z-index: 9999; box-sizing: border-box; padding: 40px; overflow-y: auto; }
         .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; border-bottom: 2px solid var(--border-color); padding-bottom: 15px; }
         .modal-header h2 { margin: 0; font-size: 28px; color: var(--sidebar-header); display: flex; align-items: center; gap: 10px; }
         
-        /* Green New Note Button */
         .new-note-btn { background-color: var(--btn-green); color: white; border: none; padding: 12px 24px; font-size: 16px; border-radius: 6px; display: flex; align-items: center; gap: 8px; }
         .new-note-btn:hover { background-color: var(--btn-green-hover); }
         
-        .grid-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
-        .grid-note-card { background-color: var(--bg-card); border: 1px solid var(--border-color); border-top: 5px solid var(--sidebar-header); border-radius: 8px; padding: 20px; box-shadow: var(--shadow); max-height: 250px; overflow: hidden; position: relative; }
+        .grid-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 20px; }
+        .grid-note-card { background-color: var(--bg-card); border: 1px solid var(--border-color); border-top: 5px solid var(--sidebar-header); border-radius: 8px; padding: 20px; box-shadow: var(--shadow); height: 260px; display: flex; flex-direction: column; justify-content: space-between; box-sizing: border-box; }
         .close-modal-x { font-size: 24px; background: transparent; border: none; margin-left: 15px; }
     </style>
 </head>
 <body>
 
+    <!-- Dashboard Overlay (Starts open by default) -->
     <div id="dashboardModal" class="fullscreen-modal" style="display: block;">
         <div class="modal-header">
-            <h2>📜 Fullscreen Note Dashboard</h2>
+            <h2>📜 Note Dashboard</h2>
             <div style="display: flex; align-items: center;">
                 <button class="new-note-btn" onclick="closeDashboard()">🟢 + New Note</button>
                 <button class="close-modal-x" onclick="closeDashboard()">✕</button>
@@ -147,7 +155,7 @@
             <div class="history">
                 <div class="history-header">
                     <h4>📜 Server Saved Notes</h4>
-                    <button class="expand-btn" onclick="openDashboard()" title="Expand Fullscreen">⛶ Expand</button>
+                    <button class="expand-btn" onclick="openDashboard()" title="Expand Dashboard">⛶ Expand</button>
                 </div>
                 <div id="notesContainer"></div>
             </div>
@@ -187,27 +195,58 @@
             if (res.status === 200) {
                 let notes = await res.json();
                 
-                // Populate regular sidebar history
                 let container = document.getElementById("notesContainer");
                 container.innerHTML = "";
                 
-                // Populate fullscreen grid dashboard
                 let gridContainer = document.getElementById("modalGridContainer");
                 gridContainer.innerHTML = "";
 
                 notes.forEach(n => {
-                    // Sidebar Cards
+                    // --- SIDEBAR CARDS ---
                     let div = document.createElement("div");
                     div.classList.add("saved-note-card");
-                    div.innerHTML = n.content;
+                    
+                    let bodyDiv = document.createElement("div");
+                    bodyDiv.classList.add("note-body");
+                    bodyDiv.innerHTML = n.content;
+                    div.appendChild(bodyDiv);
+
+                    let actionDiv = document.createElement("div");
+                    actionDiv.classList.add("note-actions");
+                    actionDiv.innerHTML = `
+                        <button class="action-link" onclick="loadNoteToEditor(\`${encodeURIComponent(n.content)}\`, true)">✏️ Edit</button>
+                        <button class="action-link" onclick="downloadDirect(\`${encodeURIComponent(n.content)}\`)">📥 Download</button>
+                    `;
+                    div.appendChild(actionDiv);
                     container.appendChild(div);
 
-                    // Dashboard Grid Cards
+                    // --- DASHBOARD GRID CARDS ---
                     let gridDiv = document.createElement("div");
                     gridDiv.classList.add("grid-note-card");
-                    gridDiv.innerHTML = n.content;
+                    
+                    let gridBody = document.createElement("div");
+                    gridBody.classList.add("note-body");
+                    gridBody.innerHTML = n.content;
+                    gridDiv.appendChild(gridBody);
+
+                    let gridAction = document.createElement("div");
+                    gridAction.classList.add("note-actions");
+                    gridAction.innerHTML = `
+                        <button class="action-link" onclick="loadNoteToEditor(\`${encodeURIComponent(n.content)}\`, false)">✏️ Edit</button>
+                        <button class="action-link" onclick="downloadDirect(\`${encodeURIComponent(n.content)}\`)">📥 Download</button>
+                    `;
+                    gridDiv.appendChild(gridAction);
                     gridContainer.appendChild(gridDiv);
                 });
+            }
+        }
+
+        // ✏️ LOAD EXISTING NOTE BACK INTO EDITOR
+        function loadNoteToEditor(encodedContent, isSidebar) {
+            const decoded = decodeURIComponent(encodedContent);
+            document.getElementById("noteEditor").innerHTML = decoded;
+            if (!isSidebar) {
+                closeDashboard();
             }
         }
 
@@ -228,21 +267,34 @@
             }
         }
 
-        // 📥 DYNAMIC DOWNLOAD SYSTEM
+        // 📥 DYNAMIC DOWNLOAD SYSTEM (Main Ribbon)
         function downloadNote() {
             let editor = document.getElementById("noteEditor");
             let htmlContent = editor.innerHTML.trim();
-            let textContent = editor.innerText.trim();
+            executeDownload(htmlContent);
+        }
 
-            if (!textContent) {
-                alert("Nothing written down to download yet!");
+        // 📥 DIRECT DOWNLOAD FOR HISTORICAL CARDS
+        function downloadDirect(encodedContent) {
+            const rawHtml = decodeURIComponent(encodedContent);
+            executeDownload(rawHtml);
+        }
+
+        function executeDownload(htmlContent) {
+            if (!htmlContent) {
+                alert("No note content identified to download!");
                 return;
             }
 
-            let choice = prompt("How would you like to download your note?\nType: 'txt', 'html', or 'markdown'").toLowerCase().trim();
+            // Create a temporary element to strip text strings cleanly for txt/md engines
+            let tempDiv = document.createElement("div");
+            tempDiv.innerHTML = htmlContent;
+            let textContent = tempDiv.innerText.trim();
+
+            let choice = prompt("How would you like to download this note?\nType: 'txt', 'html', or 'markdown'").toLowerCase().trim();
             
             let fileContent = "";
-            let fileName = "my-cloud-note";
+            let fileName = "archived-cloud-note";
             let mimeType = "text/plain";
 
             if (choice === "html") {
