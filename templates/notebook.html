@@ -4,24 +4,25 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Cloud OneNote</title>
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%220.85em%22 x=%225%22 font-size=%2280%22>💜</text></svg>">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%220.82em%22 x=%2210%22 font-size=%2275%22>💜</text></svg>">
     <style>
-        /* 🎨 THEME VARIABLES (Defaults to Light Mode) */
+        /* 🎨 THEME VARIABLES */
         :root {
-            --bg-body: #f8f9fa;       /* Premium off-white background */
-            --bg-sidebar: #f1f3f5;   /* Distinct, slightly darker gray for sidebar */
-            --bg-card: #ffffff;      /* Crisp pure white canvas/ribbon */
-            --bg-history: #f1f3f5;   /* Matches sidebar background for layout symmetry */
-            --text-main: #212529;    /* Deep charcoal text (highly legible) */
-            --text-muted: #6c757d;   /* Subtle grey for secondary labels */
-            --border-color: #dee2e6; /* Clear, sharp dividing lines */
-            --input-bg: #f8f9fa;     /* Input fields contrast beautifully */
-            --shadow: 0 4px 6px rgba(0, 0, 0, 0.04), 0 1px 3px rgba(0, 0, 0, 0.02); /* Soft depth */
-            --sidebar-header: #6f42c1; /* Deeper purple for light-mode visibility */
-            --ai-text: #007a70;      /* Darker teal for accessible contrast */
+            --bg-body: #f8f9fa;
+            --bg-sidebar: #f1f3f5;
+            --bg-card: #ffffff;
+            --bg-history: #f1f3f5;
+            --text-main: #212529;
+            --text-muted: #6c757d;
+            --border-color: #dee2e6;
+            --input-bg: #f8f9fa;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.04), 0 1px 3px rgba(0, 0, 0, 0.02);
+            --sidebar-header: #6f42c1;
+            --ai-text: #007a70;
+            --btn-green: #198754;
+            --btn-green-hover: #157347;
         }
 
-        /* 🌙 DARK MODE OVERRIDES */
         [data-theme="dark"] {
             --bg-body: #1e1e1e;
             --bg-sidebar: #252526;
@@ -34,59 +35,82 @@
             --shadow: transparent;
             --sidebar-header: #bb86fc;
             --ai-text: #03dac6;
+            --btn-green: #2ecc71;
+            --btn-green-hover: #27ae60;
         }
 
         body { font-family: 'Segoe UI', sans-serif; background-color: var(--bg-body); color: var(--text-main); margin: 0; display: flex; height: 100vh; overflow: hidden; transition: background 0.3s, color 0.3s; }
         
-        /* OneNote-style Left Sidebar */
-        .sidebar { width: 220px; background-color: var(--bg-sidebar); height: 100%; padding: 20px; border-right: 1px solid var(--border-color); box-sizing: border-box; transition: background 0.3s, border-color 0.3s; }
-        .sidebar h3 { color: var(--sidebar-header); margin-top: 0; transition: color 0.3s; }
-        .logout-link { color: #dc3545; text-decoration: none; font-size: 14px; display: block; margin-top: 30px; } /* Darker red for light mode */
+        .sidebar { width: 220px; background-color: var(--bg-sidebar); height: 100%; padding: 20px; border-right: 1px solid var(--border-color); box-sizing: border-box; display: flex; flex-direction: column; }
+        .sidebar h3 { color: var(--sidebar-header); margin-top: 0; }
+        .logout-link { color: #dc3545; text-decoration: none; font-size: 14px; margin-top: auto; display: block; }
         [data-theme="dark"] .logout-link { color: #cf6679; }
         
-        /* Right Side Content Areas */
         .main-content { flex: 1; padding: 25px; display: flex; flex-direction: column; height: 100%; box-sizing: border-box; }
         
-        /* OneNote Word Ribbon Control Bar */
-        .ribbon { background-color: var(--bg-card); padding: 10px; border-radius: 8px; display: flex; gap: 8px; align-items: center; margin-bottom: 15px; border: 1px solid var(--border-color); box-shadow: var(--shadow); transition: background 0.3s, border-color 0.3s, box-shadow 0.3s; }
-        select, button { background-color: var(--input-bg); color: var(--text-main); border: 1px solid var(--border-color); padding: 8px 12px; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 14px; transition: background 0.3s, color 0.3s, border-color 0.3s; }
+        .ribbon { background-color: var(--bg-card); padding: 10px; border-radius: 8px; display: flex; gap: 8px; align-items: center; margin-bottom: 15px; border: 1px solid var(--border-color); box-shadow: var(--shadow); }
+        select, button { background-color: var(--input-bg); color: var(--text-main); border: 1px solid var(--border-color); padding: 8px 12px; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 14px; }
         button:hover { background-color: #e2e6ea; color: #212529; }
         [data-theme="dark"] button:hover { background-color: #505050; color: white; }
         
         .ai-btn { background-color: #007a70; color: #ffffff; border: none; }
         .ai-btn:hover { background-color: #005a52; color: #ffffff; }
         [data-theme="dark"] .ai-btn { background-color: #03dac6; color: #121212; }
-        [data-theme="dark"] .ai-btn:hover { background-color: #01b4a3; color: #121212; }
 
         .save-btn { background-color: #6f42c1; color: white; border: none; }
         .save-btn:hover { background-color: #5a32a3; }
         [data-theme="dark"] .save-btn { background-color: #bb86fc; color: black; }
-        [data-theme="dark"] .save-btn:hover { background-color: #9965db; }
+
+        .download-btn { background-color: #0d6efd; color: white; border: none; }
+        .download-btn:hover { background-color: #0b5ed7; }
 
         .theme-btn { background-color: #6c757d; color: white; border: none; margin-left: auto; }
-        [data-theme="dark"] .theme-btn { background-color: #555; color: white; }
-        [data-theme="dark"] .theme-btn:hover { background-color: #5a6268; }
         
-        /* Layout split for Typing and History */
         .workspace { display: flex; flex: 1; gap: 20px; min-height: 0; }
         
-        /* OneNote Canvas (Rich Text Input) */
-        .editor { flex: 2; background-color: var(--bg-card); padding: 20px; border-radius: 8px; border: 1px solid var(--border-color); font-size: 16px; outline: none; overflow-y: auto; height: 100%; box-sizing: border-box; box-shadow: var(--shadow); transition: background 0.3s, border-color 0.3s, box-shadow 0.3s; }
+        .editor { flex: 2; background-color: var(--bg-card); padding: 20px; border-radius: 8px; border: 1px solid var(--border-color); font-size: 16px; outline: none; overflow-y: auto; height: 100%; box-sizing: border-box; box-shadow: var(--shadow); }
         .editor:empty:before { content: "Start typing your styled notes here, highlight text to format, or type a prompt for Gemini..."; color: #adb5bd; }
-        [data-theme="dark"] .editor:empty:before { color: #aaa; }
         
-        /* Saved notes column */
-        .history { flex: 1; background-color: var(--bg-history); padding: 15px; border-radius: 8px; border: 1px solid var(--border-color); overflow-y: auto; height: 100%; box-sizing: border-box; transition: background 0.3s, border-color 0.3s; }
-        .history h4 { margin-top: 0; color: var(--text-muted); border-bottom: 1px solid var(--border-color); padding-bottom: 5px; transition: color 0.3s, border-color 0.3s; }
-        .saved-note-card { background-color: var(--bg-card); padding: 12px; border-radius: 6px; margin-bottom: 10px; border-left: 4px solid var(--sidebar-header); font-size: 14px; word-break: break-word; color: var(--text-main); box-shadow: var(--shadow); transition: background 0.3s, border-color 0.3s, box-shadow 0.3s; }
+        /* 📏 Fixed ~4-inch wide History column */
+        .history { width: 384px; min-width: 384px; background-color: var(--bg-history); padding: 15px; border-radius: 8px; border: 1px solid var(--border-color); overflow-y: auto; height: 100%; box-sizing: border-box; display: flex; flex-direction: column; }
+        .history-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 5px; margin-bottom: 10px; }
+        .history h4 { margin: 0; color: var(--text-muted); }
+        .expand-btn { background-color: transparent; border: none; padding: 4px 8px; font-size: 16px; }
+        
+        #notesContainer { flex: 1; overflow-y: auto; }
+        .saved-note-card { background-color: var(--bg-card); padding: 12px; border-radius: 6px; margin-bottom: 10px; border-left: 4px solid var(--sidebar-header); font-size: 14px; word-break: break-word; color: var(--text-main); box-shadow: var(--shadow); }
+
+        /* 🖥️ FULLSCREEN DASHBOARD OVERLAY */
+        .fullscreen-modal { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background-color: var(--bg-body); z-index: 9999; box-sizing: border-box; padding: 40px; overflow-y: auto; }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; border-bottom: 2px solid var(--border-color); padding-bottom: 15px; }
+        .modal-header h2 { margin: 0; font-size: 28px; color: var(--sidebar-header); display: flex; align-items: center; gap: 10px; }
+        
+        /* Green New Note Button */
+        .new-note-btn { background-color: var(--btn-green); color: white; border: none; padding: 12px 24px; font-size: 16px; border-radius: 6px; display: flex; align-items: center; gap: 8px; }
+        .new-note-btn:hover { background-color: var(--btn-green-hover); }
+        
+        .grid-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
+        .grid-note-card { background-color: var(--bg-card); border: 1px solid var(--border-color); border-top: 5px solid var(--sidebar-header); border-radius: 8px; padding: 20px; box-shadow: var(--shadow); max-height: 250px; overflow: hidden; position: relative; }
+        .close-modal-x { font-size: 24px; background: transparent; border: none; margin-left: 15px; }
     </style>
 </head>
 <body>
 
+    <div id="dashboardModal" class="fullscreen-modal" style="display: block;">
+        <div class="modal-header">
+            <h2>📜 Fullscreen Note Dashboard</h2>
+            <div style="display: flex; align-items: center;">
+                <button class="new-note-btn" onclick="closeDashboard()">🟢 + New Note</button>
+                <button class="close-modal-x" onclick="closeDashboard()">✕</button>
+            </div>
+        </div>
+        <div id="modalGridContainer" class="grid-container"></div>
+    </div>
+
     <div class="sidebar">
         <h3>💜 Notebooks</h3>
-        <p style="color: var(--sidebar-header); font-weight: bold; cursor: pointer; transition: color 0.3s;">• Quick Notes</p>
-        <p style="color: var(--text-muted); font-size: 13px; transition: color 0.3s;">+ Add Custom Section</p>
+        <p style="color: var(--sidebar-header); font-weight: bold; cursor: pointer;">• Quick Notes</p>
+        <p style="color: var(--text-muted); font-size: 13px;">+ Add Custom Section</p>
         <a href="/logout" class="logout-link">🔒 Lock & Log Out</a>
     </div>
 
@@ -112,6 +136,7 @@
             
             <button class="ai-btn" onclick="askGemini()">✨ Ask Gemini AI</button>
             <button class="save-btn" onclick="saveNote()">Save Note to Cloud</button>
+            <button class="download-btn" onclick="downloadNote()">📥 Download Note</button>
             
             <button class="theme-btn" onclick="toggleTheme()">🌓 Theme</button>
         </div>
@@ -120,7 +145,10 @@
             <div id="noteEditor" class="editor" contenteditable="true"></div>
             
             <div class="history">
-                <h4>📜 Server Saved Notes</h4>
+                <div class="history-header">
+                    <h4>📜 Server Saved Notes</h4>
+                    <button class="expand-btn" onclick="openDashboard()" title="Expand Fullscreen">⛶ Expand</button>
+                </div>
                 <div id="notesContainer"></div>
             </div>
         </div>
@@ -135,7 +163,6 @@
             document.execCommand('fontSize', false, sizeValue);
         }
 
-        // 🌓 Theme Toggler Script (Defaults to Light, Toggles to Dark)
         function toggleTheme() {
             const currentTheme = document.documentElement.getAttribute("data-theme");
             if (currentTheme === "dark") {
@@ -145,19 +172,41 @@
             }
         }
 
+        function openDashboard() {
+            document.getElementById("dashboardModal").style.display = "block";
+        }
+
+        function closeDashboard() {
+            document.getElementById("dashboardModal").style.display = "none";
+        }
+
         document.addEventListener("DOMContentLoaded", fetchNotes);
 
         async function fetchNotes() {
             let res = await fetch('/get_notes');
             if (res.status === 200) {
                 let notes = await res.json();
+                
+                // Populate regular sidebar history
                 let container = document.getElementById("notesContainer");
                 container.innerHTML = "";
+                
+                // Populate fullscreen grid dashboard
+                let gridContainer = document.getElementById("modalGridContainer");
+                gridContainer.innerHTML = "";
+
                 notes.forEach(n => {
+                    // Sidebar Cards
                     let div = document.createElement("div");
                     div.classList.add("saved-note-card");
                     div.innerHTML = n.content;
                     container.appendChild(div);
+
+                    // Dashboard Grid Cards
+                    let gridDiv = document.createElement("div");
+                    gridDiv.classList.add("grid-note-card");
+                    gridDiv.innerHTML = n.content;
+                    gridContainer.appendChild(gridDiv);
                 });
             }
         }
@@ -179,6 +228,47 @@
             }
         }
 
+        // 📥 DYNAMIC DOWNLOAD SYSTEM
+        function downloadNote() {
+            let editor = document.getElementById("noteEditor");
+            let htmlContent = editor.innerHTML.trim();
+            let textContent = editor.innerText.trim();
+
+            if (!textContent) {
+                alert("Nothing written down to download yet!");
+                return;
+            }
+
+            let choice = prompt("How would you like to download your note?\nType: 'txt', 'html', or 'markdown'").toLowerCase().trim();
+            
+            let fileContent = "";
+            let fileName = "my-cloud-note";
+            let mimeType = "text/plain";
+
+            if (choice === "html") {
+                fileContent = `<!DOCTYPE html>\n<html>\n<head><meta charset="UTF-8"><title>Downloaded Note</title></head>\n<body>\n${htmlContent}\n</body>\n</html>`;
+                fileName += ".html";
+                mimeType = "text/html";
+            } else if (choice === "markdown" || choice === "md") {
+                fileContent = textContent; 
+                fileName += ".md";
+            } else if (choice === "txt") {
+                fileContent = textContent;
+                fileName += ".txt";
+            } else {
+                alert("Invalid format type selected. Cancelled.");
+                return;
+            }
+
+            let blob = new Blob([fileContent], { type: mimeType });
+            let tempLink = document.createElement("a");
+            tempLink.href = URL.createObjectURL(blob);
+            tempLink.download = fileName;
+            document.body.appendChild(tempLink);
+            tempLink.click();
+            document.body.removeChild(tempLink);
+        }
+
         async function askGemini() {
             let editor = document.getElementById("noteEditor");
             let currentText = editor.innerText.trim();
@@ -187,7 +277,6 @@
                 return;
             }
 
-            // Dynamically check text color for loading indicator depending on theme
             const isDark = document.documentElement.getAttribute("data-theme") === "dark";
             const loadingColor = isDark ? "#03dac6" : "#007a70";
 
